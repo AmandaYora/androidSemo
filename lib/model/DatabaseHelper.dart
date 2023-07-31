@@ -5,7 +5,7 @@ import 'Cars.dart';
 import 'Rental.dart';
 
 class DatabaseHelper {
-  static final _dbName = 'myDatabase.db';
+  static final _dbName = 'rental.db';
   static final _dbVersion = 1;
   static final _usersTableName = 'users';
   static final _carsTableName = 'mobil';
@@ -57,7 +57,8 @@ class DatabaseHelper {
         merk TEXT NOT NULL,
         tahun INTEGER NOT NULL,
         warna TEXT NOT NULL,
-        harga TEXT NOT NULL
+        harga TEXT NOT NULL,
+        picture TEXT NOT NULL
       )
     ''');
 
@@ -181,6 +182,16 @@ class DatabaseHelper {
     return null;
   }
 
+  Future<void> updateCar(Car car) async {
+    Database db = await instance.database;
+    if (car.id != null) {
+      await db.update(_carsTableName, car.toMap(),
+          where: 'id = ?', whereArgs: [car.id]);
+    } else {
+      throw Exception('Car ID is missing for updating car info');
+    }
+  }
+
   Future<User?> getUserById(int id) async {
     Database db = await instance.database;
     var result =
@@ -221,6 +232,12 @@ class DatabaseHelper {
     }
 
     return await db.delete(_usersTableName, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<bool> isCarRented(int id) async {
+    final db = await database;
+    var sewa = await db.query('sewa', where: 'id_mobil = ?', whereArgs: [id]);
+    return sewa.isNotEmpty;
   }
 
   // Other methods for querying, updating, and deleting can be created here as well.

@@ -59,6 +59,11 @@ class _UsersPageState extends State<UsersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Users", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.deepPurple,
+      ),
+      backgroundColor: Colors.grey[200],
       body: FutureBuilder(
         future: _userList,
         builder: (context, AsyncSnapshot<List<User>> snapshot) {
@@ -72,24 +77,64 @@ class _UsersPageState extends State<UsersPage> {
               User user = snapshot.data![index];
               return Dismissible(
                 key: Key(user.id.toString()),
-                background: Container(color: Colors.red),
+                background: Container(
+                  alignment: Alignment.centerRight,
+                  padding: EdgeInsets.only(right: 20.0),
+                  color: Colors.red,
+                  child: Icon(Icons.delete, color: Colors.white),
+                ),
                 onDismissed: (direction) {
                   _deleteUser(user);
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Card(
-                    elevation: 5,
+                    elevation: 8,
                     shadowColor: Colors.black54,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(15),
                     ),
-                    child: ListTile(
-                      title: Text(user.name,
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text(
-                        'Username: ${user.username}, Email: ${user.email}',
-                        style: TextStyle(color: Colors.grey[600]),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Colors.deepPurple,
+                            Colors.purple[100]!,
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          child: Icon(
+                            Icons.person_outline,
+                            color: Colors.deepPurple,
+                          ),
+                          backgroundColor: Colors.white,
+                        ),
+                        title: Text(
+                          user.name,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Username: ${user.username}',
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                            Text(
+                              'Email: ${user.email}',
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

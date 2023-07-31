@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import '../model/DatabaseHelper.dart';
@@ -59,6 +60,11 @@ class _CarsPageState extends State<CarsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Cars", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.deepPurple,
+      ),
+      backgroundColor: Colors.grey[200],
       body: FutureBuilder(
         future: _carList,
         builder: (context, AsyncSnapshot<List<Car>> snapshot) {
@@ -84,17 +90,60 @@ class _CarsPageState extends State<CarsPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Card(
-                    elevation: 5,
+                    elevation: 8,
                     shadowColor: Colors.black54,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(15),
                     ),
-                    child: ListTile(
-                      title: Text(car.merk,
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text(
-                        "Tahun: ${car.tahun}, Warna: ${car.warna}, Harga/hari: ${car.harga}",
-                        style: TextStyle(color: Colors.grey[600]),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Colors.deepPurple,
+                            Colors.purple[100]!,
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 10.0),
+                        leading: Container(
+                          padding: EdgeInsets.only(right: 15.0),
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  right: BorderSide(
+                                      width: 1.0, color: Colors.white24))),
+                          child: car.picture == null
+                              ? Icon(Icons.directions_car, color: Colors.white)
+                              : Image.file(File(car.picture), width: 50),
+                        ),
+                        title: Text(
+                          car.merk,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "Tahun: ${car.tahun}",
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                            Text(
+                              "Warna: ${car.warna}",
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                            Text(
+                              "Harga/hari: ${car.harga}",
+                              style: TextStyle(color: Colors.white70),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -105,7 +154,11 @@ class _CarsPageState extends State<CarsPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Colors.white, // set the color to white
+        ),
+        backgroundColor: Colors.deepPurple,
         onPressed: () {
           Navigator.push(
             context,

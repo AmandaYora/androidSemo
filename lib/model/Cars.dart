@@ -4,6 +4,7 @@ class Car {
   final int tahun;
   final String warna;
   final String harga;
+  final String picture; // penambahan properti picture
 
   Car({
     this.id,
@@ -11,6 +12,7 @@ class Car {
     required this.tahun,
     required this.warna,
     required this.harga,
+    required this.picture, // penambahan properti picture
   });
 
   Map<String, dynamic> toMap() {
@@ -20,6 +22,7 @@ class Car {
       'tahun': tahun,
       'warna': warna,
       'harga': harga,
+      'picture': picture, // penambahan properti picture
     };
   }
 
@@ -30,6 +33,7 @@ class Car {
       tahun: map['tahun'],
       warna: map['warna'],
       harga: map['harga'],
+      picture: map['picture'], // penambahan properti picture
     );
   }
 }

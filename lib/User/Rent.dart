@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/DatabaseHelper.dart';
@@ -90,45 +91,151 @@ class _RentPageState extends State<RentPage> {
     );
   }
 
+  void _showRentedDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Car Rented'),
+        content: Text('This car is already rented.'),
+        actions: [
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Car>>(
-      future: futureCars,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              Car car = snapshot.data![index];
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  elevation: 5,
-                  shadowColor: Colors.black54,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ListTile(
-                    title: Text(car.merk,
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text(
-                      '${car.tahun} - ${car.warna}',
-                      style: TextStyle(color: Colors.grey[600]),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: FutureBuilder<List<Car>>(
+        future: futureCars,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return GridView.builder(
+              itemCount: snapshot.data!.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemBuilder: (context, index) {
+                Car car = snapshot.data![index];
+                return GestureDetector(
+                  onTap: () async {
+                    bool isRented =
+                        await DatabaseHelper.instance.isCarRented(car.id!);
+                    isRented ? _showRentedDialog() : _showRentDialog(car);
+                  },
+                  child: Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                    trailing: Text('Rp ${car.harga}',
-                        style: TextStyle(color: Colors.grey[800])),
-                    onTap: () => _showRentDialog(car),
+                    child: Stack(
+                      children: <Widget>[
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            image: car.picture == null
+                                ? DecorationImage(
+                                    image: AssetImage(
+                                        'assets/images/default_car_image.png'),
+                                    fit: BoxFit.cover,
+                                  )
+                                : DecorationImage(
+                                    image: FileImage(File(car.picture)),
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black54,
+                              ],
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  car.merk,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                Text(
+                                  '${car.tahun} - ${car.warna}',
+                                  style: TextStyle(color: Colors.white70),
+                                ),
+                                Text(
+                                  'Price: \Rp.${car.harga}',
+                                  style: TextStyle(color: Colors.white70),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        FutureBuilder<bool>(
+                          future: DatabaseHelper.instance.isCarRented(car.id!),
+                          builder: (context, snapshot) {
+                            if (snapshot.data == true) {
+                              return Positioned(
+                                right: 10,
+                                top: 10,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(15),
+                                    border: Border.all(
+                                        color: Colors.white, width: 2),
+                                  ),
+                                  child: Text(
+                                    'Rented',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return Container();
+                            }
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        } else if (snapshot.hasError) {
-          return Text("${snapshot.error}");
-        }
-        // By default, show a loading spinner.
-        return CircularProgressIndicator();
-      },
+                );
+              },
+            );
+          } else if (snapshot.hasError) {
+            return Text("${snapshot.error}");
+          }
+          // By default, show a loading spinner.
+          return CircularProgressIndicator();
+        },
+      ),
     );
   }
 }

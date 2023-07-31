@@ -20,6 +20,11 @@ class _RentPageState extends State<RentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Rentals", style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.deepPurple,
+      ),
+      backgroundColor: Colors.grey[200],
       body: FutureBuilder<List<Rental>>(
         future: databaseHelper.getSewa(),
         builder: (context, snapshot) {
@@ -46,55 +51,74 @@ class _RentPageState extends State<RentPage> {
                           actionPane: SlidableDrawerActionPane(),
                           actionExtentRatio: 0.25,
                           child: Card(
-                            elevation: 5,
+                            elevation: 8,
                             shadowColor: Colors.black54,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            child: ListTile(
-                              title: Text('Nama Mobil: ${car.merk}',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                              subtitle: Text(
-                                'Nama User: ${user.name}, Jumlah Hari: ${rental.jumlah_hari}, Total Biaya: ${rental.total_biaya}',
-                                style: TextStyle(color: Colors.grey[600]),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Colors.deepPurple,
+                                    Colors.purple[100]!,
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(15),
                               ),
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text('Detail Sewa'),
-                                      content: SingleChildScrollView(
-                                        child: ListBody(
-                                          children: <Widget>[
-                                            Text('Nama Mobil: ${car.merk}'),
-                                            Text('Tahun Mobil: ${car.tahun}'),
-                                            Text('Warna Mobil: ${car.warna}'),
-                                            Text('Harga Mobil: ${car.harga}'),
-                                            Text('Nama User: ${user.name}'),
-                                            Text(
-                                                'Username User: ${user.username}'),
-                                            Text('Email User: ${user.email}'),
-                                            Text(
-                                                'Jumlah Hari: ${rental.jumlah_hari}'),
-                                            Text(
-                                                'Total Biaya: ${rental.total_biaya}'),
-                                          ],
+                              child: ListTile(
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 20.0, vertical: 10.0),
+                                title: Text(
+                                  'Nama Mobil: ${car.merk}',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18),
+                                ),
+                                subtitle: Text(
+                                  'Nama User: ${user.name}, Jumlah Hari: ${rental.jumlah_hari}, Total Biaya: ${rental.total_biaya}',
+                                  style: TextStyle(color: Colors.white70),
+                                ),
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text('Detail Sewa'),
+                                        content: SingleChildScrollView(
+                                          child: ListBody(
+                                            children: <Widget>[
+                                              Text('Nama Mobil: ${car.merk}'),
+                                              Text('Tahun Mobil: ${car.tahun}'),
+                                              Text('Warna Mobil: ${car.warna}'),
+                                              Text('Harga Mobil: ${car.harga}'),
+                                              Text('Nama User: ${user.name}'),
+                                              Text(
+                                                  'Username User: ${user.username}'),
+                                              Text('Email User: ${user.email}'),
+                                              Text(
+                                                  'Jumlah Hari: ${rental.jumlah_hari}'),
+                                              Text(
+                                                  'Total Biaya: ${rental.total_biaya}'),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          child: Text('Tutup'),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child: Text('Tutup'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
                             ),
                           ),
                           secondaryActions: <Widget>[
@@ -103,15 +127,9 @@ class _RentPageState extends State<RentPage> {
                               color: Colors.red,
                               icon: Icons.delete,
                               onTap: () async {
-                                // Ensure rental.id is not null
                                 if (rental.id != null) {
-                                  // Delete the item from the data source
                                   await databaseHelper.deleteSewa(rental.id!);
-
-                                  // Then, remove the item from the visual list
                                   sewaList.removeAt(index);
-
-                                  // Then, update the UI
                                   setState(() {});
                                 }
                               },
@@ -131,7 +149,12 @@ class _RentPageState extends State<RentPage> {
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
-            return Text('No data available');
+            return Center(
+              child: Text(
+                'No data available',
+                style: TextStyle(color: Colors.grey, fontSize: 18),
+              ),
+            );
           }
         },
       ),

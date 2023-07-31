@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'CheckAuth.dart';
 import 'Auth/Login.dart';
 import 'Admin/Dashboard.dart'; // ensure this is the correct path
@@ -7,6 +8,10 @@ import 'model/DatabaseHelper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Request permissions
+  await Permission.photos.request();
+  await Permission.camera.request();
 
   // Initialize the database in the background
   await DatabaseHelper.instance.initializeDatabaseWithDefaultData();
